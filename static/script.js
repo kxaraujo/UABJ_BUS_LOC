@@ -16,7 +16,9 @@ const listaLocalizacoes = [
   {'name': 'Erem João Monteiro', 'latitude': -8.339019961440135, 'longitude': -36.43257982213477},
   {'name': 'Câmara municipal', 'latitude': -8.332738694916673, 'longitude': -36.41868088328961},
   {'name': 'Posto Petrovia', 'latitude': -8.337249932009748, 'longitude': -36.4303272889118},
-  {'name': 'Trevo de acesso', 'latitude': -8.345068172150173, 'longitude': -36.43325160699831}
+  {'name': 'Trevo de acesso', 'latitude': -8.345068172150173, 'longitude': -36.43325160699831},
+  {'name' : 'casa de karol', 'latitude': -8.338426, 'longitude':-36.422855},
+  {'name': 'casa de karolzinha', 'latitude':-8.338426 , 'longitude': -36.422855},
 ];
 
 // Calculo da distancia
@@ -38,34 +40,55 @@ function toRadians(graus) {
 }
 
 // Calculo do raio de tolerancia
+// ...
+
+// Calculo do raio de tolerancia
 function verificarProximidade(latitude, longitude) {
-  const localizacoesProximas = [];
+  const localizacaoExata = listaLocalizacoes.find(localizacao => localizacao.latitude === latitude && localizacao.longitude === longitude);
 
-  listaLocalizacoes.forEach(localizacao => {
-    const distancia = calcularDistancia(latitude, longitude, localizacao.latitude, localizacao.longitude);
-    if (distancia < 0.1) { // 100 metros (0.1 km)
-      localizacoesProximas.push({ name: localizacao.name, distancia: distancia.toFixed(2) });
-    }
-    
-  });
+  if (localizacaoExata) {
+    document.getElementById("localizacoes").textContent = `Você está no/a ${localizacaoExata.name}.`;
+  } else {
+    const localizacoesProximas = [];
+    const distanciaTolerancia = 0.01; // 10 metros (0.01 km)
 
-  if (localizacoesProximas.length > 0) {
-    let localizacoesHTML = "";
-    localizacoesProximas.forEach(localizacao => {
-      localizacoesHTML += `<p>Você está a ${localizacao.distancia} km de ${localizacao.name}\n</p>`;
+    listaLocalizacoes.forEach(localizacao => {
+      const distancia = calcularDistancia(latitude, longitude, localizacao.latitude, localizacao.longitude);
+      if (distancia < distanciaTolerancia) {
+        localizacoesProximas.push({ name: localizacao.name, distancia: distancia.toFixed(2) });
+      }
     });
-    document.getElementById("localizacoes").innerHTML = localizacoesHTML;
-    enviarDistanciaTelegram(localizacoesProximas);
-  } 
-  else {
-    document.getElementById("localizacoes").textContent = "Você não está próximo de nenhuma localização.";
-    enviarDistanciaTelegram(localizacoesProximas);
+
+    if (localizacoesProximas.length > 0) {
+      let localizacoesHTML = "";
+      localizacoesProximas.forEach(localizacao => {
+        if (localizacao.distancia !== '0.00') {
+          localizacoesHTML += `<p>Você está a ${localizacao.distancia} km de ${localizacao.name}\n</p>`;
+        }
+      });
+
+      // Se estiver próximo de uma localização exata, mostra apenas o nome dela
+      const localizacaoProximaExata = localizacoesProximas.find(localizacao => localizacao.distancia === '0.00');
+      if (localizacaoProximaExata) {
+        document.getElementById("localizacoes").textContent = `Você está no/a ${localizacaoProximaExata.name}.`;
+      } else {
+        // Se estiver próximo de outras localizações, mostra as informações de distância
+        document.getElementById("localizacoes").innerHTML = localizacoesHTML;
+      }
+
+      // Sempre envie a mensagem para o Telegram, independentemente de estar exato ou próximo
+      enviarDistanciaTelegram(localizacoesProximas);
+    } else {
+      document.getElementById("localizacoes").textContent = "Você não está próximo de nenhuma localização.";
+    }
   }
 }
+
  // Enviar mensagem para o telegram
+// Enviar mensagem para o telegram
 function enviarDistanciaTelegram(localizacoes) {
   const url = '/enviar_distancia';
-  const chatId = -1001740152545; 
+  const chatId = -1001740152545;
   const data = { localizacoes: localizacoes, chat_id: chatId };
 
   fetch(url, {
@@ -114,7 +137,7 @@ function obterLocalizacao() {
   }
 }
 
-setInterval(obterLocalizacao, 5000); // Chama a função a cada 5 segundos
+setInterval(obterLocalizacao, 300000); // Chama a função a cada 5 minutos (300.000 milissegundos)
 
 const btnObterLocalizacao = document.getElementById("btnObterLocalizacao");
 btnObterLocalizacao.addEventListener("click", obterLocalizacao);
