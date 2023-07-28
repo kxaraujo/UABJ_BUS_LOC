@@ -1,3 +1,4 @@
+from app.application import application
 from flask import Flask, request, render_template
 import telebot
 import os
