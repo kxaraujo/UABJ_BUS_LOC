@@ -69,25 +69,13 @@ def comando_start(message):
 def enviar_distancia():
     localizacoes = request.json['localizacoes']
     chat_id = request.json['chat_id']  # Obtém o chat ID do JSON recebido
-
-    localizacao_exata = None
     mensagem = ""
+    
     for localizacao in localizacoes:
         distancia = localizacao['distancia']
         nome = localizacao['name']
-        if distancia == '0.00':
-            localizacao_exata = nome
-        else:
-            mensagem += f"Você está a {distancia} km de {nome}\n"
-
-    if localizacao_exata:
-        bot.send_message(chat_id, f"Você está no/a {localizacao_exata}.")
-    else:
-        if mensagem:
-            bot.send_message(chat_id, mensagem)
-        else:
-            bot.send_message(chat_id, "Você não está próximo de nenhuma localização.")
-
+        mensagem += f"Sua localização atual é: {nome}\n"
+        
     return "OK"
 
 if __name__ == '__main__':
