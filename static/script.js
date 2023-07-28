@@ -17,8 +17,6 @@ const listaLocalizacoes = [
   {'name': 'Câmara municipal', 'latitude': -8.332738694916673, 'longitude': -36.41868088328961},
   {'name': 'Posto Petrovia', 'latitude': -8.337249932009748, 'longitude': -36.4303272889118},
   {'name': 'Trevo de acesso', 'latitude': -8.345068172150173, 'longitude': -36.43325160699831},
-  {'name' : 'casa de karol', 'latitude': -8.338426, 'longitude':-36.422855},
-  {'name': 'casa de karolzinha', 'latitude':-8.338426 , 'longitude': -36.422855},
 ];
 
 // Calculo da distancia
@@ -38,10 +36,6 @@ function calcularDistancia(latitude1, longitude1, latitude2, longitude2) {
 function toRadians(graus) {
   return graus * (Math.PI / 180);
 }
-
-// Calculo do raio de tolerancia
-// ...
-
 // Calculo do raio de tolerancia
 function verificarProximidade(latitude, longitude) {
   const localizacaoExata = listaLocalizacoes.find(localizacao => localizacao.latitude === latitude && localizacao.longitude === longitude);
@@ -62,29 +56,20 @@ function verificarProximidade(latitude, longitude) {
     if (localizacoesProximas.length > 0) {
       let localizacoesHTML = "";
       localizacoesProximas.forEach(localizacao => {
-        if (localizacao.distancia !== '0.00') {
+        if (localizacao.distancia === '0.00') {
+          localizacoesHTML += `<p>Você está no/a ${localizacao.name}.\n</p>`;
+        } else {
           localizacoesHTML += `<p>Você está a ${localizacao.distancia} km de ${localizacao.name}\n</p>`;
         }
       });
-
-      // Se estiver próximo de uma localização exata, mostra apenas o nome dela
-      const localizacaoProximaExata = localizacoesProximas.find(localizacao => localizacao.distancia === '0.00');
-      if (localizacaoProximaExata) {
-        document.getElementById("localizacoes").textContent = `Você está no/a ${localizacaoProximaExata.name}.`;
-      } else {
-        // Se estiver próximo de outras localizações, mostra as informações de distância
-        document.getElementById("localizacoes").innerHTML = localizacoesHTML;
-      }
-
-      // Sempre envie a mensagem para o Telegram, independentemente de estar exato ou próximo
-      enviarDistanciaTelegram(localizacoesProximas);
+      document.getElementById("localizacoes").innerHTML = localizacoesHTML;
     } else {
       document.getElementById("localizacoes").textContent = "Você não está próximo de nenhuma localização.";
     }
+
+    enviarDistanciaTelegram(localizacoesProximas); // Sempre envie a mensagem para o Telegram
   }
 }
-
- // Enviar mensagem para o telegram
 // Enviar mensagem para o telegram
 function enviarDistanciaTelegram(localizacoes) {
   const url = '/enviar_distancia';
@@ -141,3 +126,4 @@ setInterval(obterLocalizacao, 300000); // Chama a função a cada 5 minutos (300
 
 const btnObterLocalizacao = document.getElementById("btnObterLocalizacao");
 btnObterLocalizacao.addEventListener("click", obterLocalizacao);
+
