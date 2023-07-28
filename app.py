@@ -74,7 +74,7 @@ def enviar_distancia():
     for localizacao in localizacoes:
         distancia = localizacao['distancia']
         nome = localizacao['name']
-        mensagem = f"Sua localização atual é: {nome}\n"
+        mensagem += f"Sua localização atual é: {nome}\n"
         
     return "OK"
 
