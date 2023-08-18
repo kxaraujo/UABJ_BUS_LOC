@@ -1,7 +1,12 @@
 from flask import Flask, request, render_template
 import telebot
 import os
+from buffer import MessageBuffer
+import time
 
+
+# Cria uma instância da classe MessageBuffer
+message_buffer = MessageBuffer()
 
 # Token de acesso do bot do Telegram
 token = '6103231923:AAH1sxXKyQMZrwbrjT9VsL5coUK7OD24qT4'
@@ -37,13 +42,27 @@ def enviar_distancia():
     localizacoes = request.json['localizacoes']
     chat_id = request.json['chat_id']  # Obtém o chat ID do JSON recebido
     mensagem = "Buscando...\n"
+    
     for localizacao in localizacoes:
         nome = localizacao['name']
         mensagem = f"Sua localização atual é: {nome}\n"
-
-    # Envie a mensagem para o bot do Telegram usando a API do Telegram
-    bot.send_message(chat_id, mensagem)
-
+        message_buffer.add_message((chat_id, mensagem))  # Adiciona a mensagem ao buffer
+    
     return "OK"
+
+def enviar_mensagens_buffer():
+    while True:
+        time.sleep(30)  # Espera por 30 segundos
+        messages = message_buffer.get_messages()
+        for chat_id, mensagem in messages:
+            bot.send_message(chat_id, mensagem)
+
+# Inicia uma thread para enviar as mensagens do buffer
+import threading
+threading.Thread(target=enviar_mensagens_buffer).start()
+
+
 if __name__ == '__main__':
     app.run()
+    
+
