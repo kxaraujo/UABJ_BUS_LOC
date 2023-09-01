@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testes</title>
+    <script src="script.js"></script>
+</head>
+<body>
+    <h1>Testes Unitários</h1>
+    <div id="test-results"></div>
+    <script>
+        function runTests() {
+            const testResults = document.getElementById("test-results");
+
+            // Teste 1: Chame a função obterDistancia com coordenadas válidas
+            const resultadoTeste1 = obterDistancia(-8.337102229888044, -36.418989475786226);
+            const teste1Passou = resultadoTeste1.includes("Sua localização: Latitude") && resultadoTeste1.includes("Longitude");
+            const mensagemTeste1 = teste1Passou ? "Teste 1 passou!" : "Teste 1 falhou.";
+            
+            // Exiba o resultado do teste 1
+            const resultadoTeste1Elemento = document.createElement("p");
+            resultadoTeste1Elemento.textContent = mensagemTeste1;
+            testResults.appendChild(resultadoTeste1Elemento);
+
+            // Teste 2: Outro exemplo de teste
+            const resultadoTeste2 = obterDistancia(-8.343648504423799, -36.41387802698492);
+            const teste2Passou = resultadoTeste2.includes("Sua localização: Latitude") && resultadoTeste2.includes("Longitude");
+            const mensagemTeste2 = teste2Passou ? "Teste 2 passou!" : "Teste 2 falhou.";
+
+            // Exiba o resultado do teste 2
+            const resultadoTeste2Elemento = document.createElement("p");
+            resultadoTeste2Elemento.textContent = mensagemTeste2;
+            testResults.appendChild(resultadoTeste2Elemento);
+        }
+
+        // Execute os testes quando a página for carregada
+        window.addEventListener("load", runTests);
+    </script>
+</body>
+</html>
