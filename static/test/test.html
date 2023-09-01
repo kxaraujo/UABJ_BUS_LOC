@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Testes Unitários</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    #test-results {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background-color: #f5f5f5;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .passou {
+      color: green;
+    }
+
+    .falhou {
+      color: red;
+    }
+
+    .stack-trace {
+      white-space: pre-wrap;
+      font-size: 14px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Testes Unitários</h1>
+  <div id="test-results"></div>
+  <script src="script.js"></script>
+  <script src="obterLocalizacao.test.js"></script>
+  <script>
+    var testResults = document.getElementById("test-results");
+
+    function mostrarResultado(teste, sucesso, mensagemErro) {
+      var resultado = document.createElement("p");
+      resultado.textContent = teste + ": " + (sucesso ? "PASSOU" : "FALHOU");
+      resultado.classList.add(sucesso ? "passou" : "falhou");
+
+      if (!sucesso && mensagemErro) {
+        var erro = document.createElement("div");
+        erro.textContent = "Erro: ";
+        erro.classList.add("stack-trace");
+
+        var stackTrace = document.createElement("pre");
+        stackTrace.textContent = mensagemErro;
+        erro.appendChild(stackTrace);
+
+        resultado.appendChild(erro);
+      }
+
+      testResults.appendChild(resultado);
+    }
+
+    // Executar os testes
+    function runTests() {
+      try {
+        obterDistancia();
+        mostrarResultado("obterDistancia", true);
+      } catch (error) {
+        mostrarResultado("obterDistancia", false, error.stack);
+      }
+    }
+
+    // Iniciar os testes após o carregamento da página
+    window.addEventListener("load", runTests);
+  </script>
+</body>
+</html>
